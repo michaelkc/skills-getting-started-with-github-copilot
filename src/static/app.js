@@ -20,27 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
         activityCard.className = "activity-card";
 
         const spotsLeft = details.max_participants - details.participants.length;
-        const participantsMarkup = details.participants.length
-          ? `<ul class="participants-list">${details.participants
-              .map(
-                (participant) => `
-                  <li>
-                    <span class="participant-email">${participant}</span>
-                    <button
-                      type="button"
-                      class="participant-delete-btn"
-                      data-activity="${name}"
-                      data-email="${participant}"
-                      aria-label="Unregister ${participant} from ${name}"
-                      title="Unregister participant"
-                    >
-                      &times;
-                    </button>
-                  </li>
-                `
-              )
-              .join("")}</ul>`
-          : '<p class="participants-empty">No participants yet. Be the first to join!</p>';
 
         activityCard.innerHTML = `
           <h4>${name}</h4>
@@ -49,9 +28,41 @@ document.addEventListener("DOMContentLoaded", () => {
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
           <div class="participants-section">
             <p class="participants-title"><strong>Participants (${details.participants.length}):</strong></p>
-            ${participantsMarkup}
           </div>
         `;
+
+        const participantsSection = activityCard.querySelector(".participants-section");
+
+        if (details.participants.length) {
+          const ul = document.createElement("ul");
+          ul.className = "participants-list";
+          details.participants.forEach((participant) => {
+            const li = document.createElement("li");
+
+            const span = document.createElement("span");
+            span.className = "participant-email";
+            span.textContent = participant;
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "participant-delete-btn";
+            button.dataset.activity = name;
+            button.dataset.email = participant;
+            button.setAttribute("aria-label", `Unregister ${participant} from ${name}`);
+            button.title = "Unregister participant";
+            button.innerHTML = "&times;";
+
+            li.appendChild(span);
+            li.appendChild(button);
+            ul.appendChild(li);
+          });
+          participantsSection.appendChild(ul);
+        } else {
+          const p = document.createElement("p");
+          p.className = "participants-empty";
+          p.textContent = "No participants yet. Be the first to join!";
+          participantsSection.appendChild(p);
+        }
 
         activitiesList.appendChild(activityCard);
 
